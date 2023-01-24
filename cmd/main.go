@@ -3,8 +3,8 @@
 package main
 
 import (
-	"github.com/TikTokLite/cmd/dal"
-	"github.com/TikTokLite/cmd/router"
+	"github.com/okatu-loli/TikTokLite/cmd/dal"
+	"github.com/okatu-loli/TikTokLite/cmd/router"
 
 	"github.com/cloudwego/hertz/pkg/app/server"
 )

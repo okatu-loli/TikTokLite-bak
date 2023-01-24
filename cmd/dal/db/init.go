@@ -3,7 +3,7 @@ package db
 import (
 	"time"
 
-	"github.com/TikTokLite/config"
+	"github.com/okatu-loli/TikTokLite/config"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
