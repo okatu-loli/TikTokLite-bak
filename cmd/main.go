@@ -3,14 +3,21 @@
 package main
 
 import (
+	"go-project/TikTokLite/cmd/dal"
 	"go-project/TikTokLite/cmd/router"
 
 	"github.com/cloudwego/hertz/pkg/app/server"
 )
 
+type Text struct {
+	Val string
+}
+
 func main() {
 	h := server.Default()
 
 	router.CustomizedRegister(h)
+	dal.Init()
+
 	h.Spin()
 }
