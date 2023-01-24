@@ -3,8 +3,8 @@
 package router
 
 import (
+	handler "github.com/TikTokLite/internal/handler"
 	"github.com/cloudwego/hertz/pkg/app/server"
-	handler "go-project/TikTokLite/internal/handler"
 )
 
 // customizeRegister registers customize routers.

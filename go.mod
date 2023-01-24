@@ -1,4 +1,4 @@
-module go-project/TikTokLite
+module github.com/TikTokLite
 
 go 1.19
 
