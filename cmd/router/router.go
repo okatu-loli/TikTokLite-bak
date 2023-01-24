@@ -4,10 +4,10 @@ package router
 
 import (
 	"github.com/cloudwego/hertz/pkg/app/server"
-	handler "go-project/TikTokLite/internal/handler"
+	handler "github.com/okatu-loli/TikTokLite/internal/handler"
 )
 
-// customizeRegister registers customize routers.
+// CustomizedRegister registers customize routers.
 func CustomizedRegister(r *server.Hertz) {
 	r.GET("/ping", handler.Ping)
 

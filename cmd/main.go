@@ -3,8 +3,8 @@
 package main
 
 import (
-	"go-project/TikTokLite/cmd/dal"
-	"go-project/TikTokLite/cmd/router"
+	"github.com/okatu-loli/TikTokLite/cmd/dal"
+	"github.com/okatu-loli/TikTokLite/cmd/router"
 
 	"github.com/cloudwego/hertz/pkg/app/server"
 )
