@@ -30,7 +30,7 @@ func Register(ctx context.Context, c *app.RequestContext) {
 	if err = service.Register(username, password); err != nil {
 		statusCode = -1
 		statusMsg = err.Error()
-
+		return
 	} else { // 注册成功
 		statusMsg = "Register Success!"
 	}
