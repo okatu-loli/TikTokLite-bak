@@ -5,6 +5,7 @@ package router
 import (
 	"github.com/cloudwego/hertz/pkg/app/server"
 	handler "github.com/okatu-loli/TikTokLite/internal/handler"
+	"github.com/okatu-loli/TikTokLite/internal/middleware"
 )
 
 // CustomizedRegister registers customize routers.
@@ -21,6 +22,13 @@ func CustomizedRegister(r *server.Hertz) {
 			user.POST("/register", handler.Register)
 			//user.POST("/login", handler.Login)
 			//user.GET("/", handler.GetUserInfo)
+			user.POST("/login", middleware.JwtMiddleware.LoginHandler)
+		}
+
+		video := douyin.Group("/publish")
+		{
+			video.Use(middleware.JwtMiddleware.MiddlewareFunc())
+			video.POST("action", handler.UploadVideo)
 		}
 	}
 }
