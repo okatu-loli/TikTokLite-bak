@@ -18,3 +18,14 @@ func Md5Encode(str string) string {
 	h.Write([]byte(str + secret))
 	return hex.EncodeToString(h.Sum(nil))
 }
+
+// CheckVideo 检查视频格式
+func CheckVideo(str string) bool {
+	videoExt := []string{"mp4"}
+	for _, v := range videoExt {
+		if str == v {
+			return true
+		}
+	}
+	return false
+}
