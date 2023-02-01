@@ -5,7 +5,6 @@ package main
 import (
 	"github.com/okatu-loli/TikTokLite/cmd/dal"
 	"github.com/okatu-loli/TikTokLite/cmd/router"
-	"github.com/okatu-loli/TikTokLite/config/oss"
 	"github.com/okatu-loli/TikTokLite/internal/middleware"
 
 	"github.com/cloudwego/hertz/pkg/app/server"
@@ -17,8 +16,6 @@ type Text struct {
 
 func main() {
 	h := server.Default()
-	//初始化oss
-	oss.OSSInit()
 	middleware.InitJwt()
 	router.CustomizedRegister(h)
 	dal.Init()

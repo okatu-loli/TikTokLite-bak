@@ -3,6 +3,7 @@ package db
 import (
 	"fmt"
 
+	"github.com/okatu-loli/TikTokLite/config"
 	"github.com/okatu-loli/TikTokLite/internal/model"
 )
 
@@ -11,8 +12,8 @@ func CreateVideo(title string, playUrl string, coverUrl string, auId uint) error
 	result := DB.Create(&model.Video{
 		Title:    title,
 		AuthorId: auId,
-		PlayUrl:  playUrl,
-		CoverUrl: coverUrl,
+		PlayUrl:  config.OSSPreUrl + playUrl,
+		CoverUrl: config.OSSPreUrl + coverUrl,
 	})
 	fmt.Println(result.RowsAffected)
 	fmt.Println(result.Error)
