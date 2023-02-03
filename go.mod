@@ -38,6 +38,6 @@ require (
 	google.golang.org/protobuf v1.28.0 // indirect
 	gorm.io/driver/mysql v1.4.5
 	gorm.io/driver/sqlite v1.4.4 // indirect
-	gorm.io/gorm v1.24.3 // indirect
+	gorm.io/gorm v1.24.3
 	gorm.io/plugin/opentelemetry v0.1.0
 )

@@ -1,4 +1,4 @@
-package comment
+package favorite
 
 import (
 	"errors"

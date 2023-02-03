@@ -2,6 +2,7 @@ package comment
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/okatu-loli/TikTokLite/internal/model"
 )
@@ -28,9 +29,9 @@ func NewQueryCommentListFlow(userId, videoId int64) *QueryCommentListFlow {
 }
 
 func (q *QueryCommentListFlow) Do() (*List, error) {
-	//if err := q.checkNum(); err != nil {
-	//	return nil, err
-	//}
+	if err := q.checkNum(); err != nil {
+		return nil, err
+	}
 	if err := q.prepareData(); err != nil {
 		return nil, err
 	}
@@ -40,15 +41,15 @@ func (q *QueryCommentListFlow) Do() (*List, error) {
 	return q.commentList, nil
 }
 
-//func (q *QueryCommentListFlow) checkNum() error {
-//if !model.NewUserInfoDAO().IsUserExistById(q.userId) {
-//	return fmt.Errorf("用户%d处于登出状态", q.userId)
-//}
-//if !model.NewVideoDAO().IsVideoExistById(q.videoId) {
-//	return fmt.Errorf("视频%d不存在或已经被删除", q.videoId)
-//}
-//return nil
-//}
+func (q *QueryCommentListFlow) checkNum() error {
+	if !model.NewUserInfoDAO().IsUserExistById(q.userId) {
+		return fmt.Errorf("用户%d处于登出状态", q.userId)
+	}
+	if !model.NewVideoDAO().IsVideoExistById(q.videoId) {
+		return fmt.Errorf("视频%d不存在或已经被删除", q.videoId)
+	}
+	return nil
+}
 
 func (q *QueryCommentListFlow) prepareData() error {
 	err := model.NewCommentDAO().QueryCommentListByVideoId(q.videoId, &q.comments)
