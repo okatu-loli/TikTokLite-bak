@@ -56,8 +56,7 @@ func (q *QueryCommentListFlow) prepareData() error {
 	if err != nil {
 		return err
 	}
-	//根据前端的要求填充正确的时间格式
-	//err = util.FillCommentListFields(&q.comments)
+
 	if err != nil {
 		return errors.New("暂时还没有人评论")
 	}

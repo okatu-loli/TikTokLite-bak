@@ -35,7 +35,7 @@ func (c *CommentDAO) AddCommentAndUpdateCount(comment *Comment) error {
 			return err
 		}
 		//增加count
-		if err := tx.Exec("UPDATE videos v SET v.comment_count = v.comment_count+1 WHERE v.id=?", comment.VideoId).Error; err != nil {
+		if err := tx.Exec("UPDATE video v SET v.comment_count = v.comment_count+1 WHERE v.id=?", comment.VideoId).Error; err != nil {
 			return err
 		}
 
@@ -48,7 +48,7 @@ func (c *CommentDAO) DeleteCommentAndUpdateCountById(commentId, videoId int64) e
 	//执行事务
 	return DB.Transaction(func(tx *gorm.DB) error {
 		//删除评论
-		if err := tx.Exec("DELETE FROM comments WHERE id = ?", commentId).Error; err != nil {
+		if err := tx.Exec("DELETE FROM comment WHERE id = ?", commentId).Error; err != nil {
 			// 返回任何错误都会回滚事务
 			return err
 		}

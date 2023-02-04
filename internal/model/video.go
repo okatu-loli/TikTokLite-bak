@@ -10,7 +10,7 @@ import (
 type Video struct {
 	BasePo
 	UserInfoId    int64       `json:"-"`
-	Author        UserInfo    `json:"author,omitempty" gorm:"-"` //这里应该是作者对视频的一对多的关系，而不是视频对作者，故gorm不能存他，但json需要返回它
+	Author        UserInfo    `json:"author,omitempty" gorm:"-"`
 	PlayUrl       string      `json:"play_url,omitempty"`
 	CoverUrl      string      `json:"cover_url,omitempty"`
 	FavoriteCount int64       `json:"favorite_count,omitempty"`
@@ -38,10 +38,10 @@ func NewVideoDAO() *VideoDAO {
 // PlusOneFavorByUserIdAndVideoId 增加一个赞
 func (v *VideoDAO) PlusOneFavorByUserIdAndVideoId(userId int64, videoId int64) error {
 	return DB.Transaction(func(tx *gorm.DB) error {
-		if err := tx.Exec("UPDATE videos SET favorite_count=favorite_count+1 WHERE id = ?", videoId).Error; err != nil {
+		if err := tx.Exec("UPDATE video SET favorite_count=favorite_count+1 WHERE id = ?", videoId).Error; err != nil {
 			return err
 		}
-		if err := tx.Exec("INSERT INTO `user_favor_videos` (`user_info_id`,`video_id`) VALUES (?,?)", userId, videoId).Error; err != nil {
+		if err := tx.Exec("INSERT INTO `favorite` (`user_info_id`,`video_id`) VALUES (?,?)", userId, videoId).Error; err != nil {
 			return err
 		}
 		return nil
@@ -55,7 +55,7 @@ func (v *VideoDAO) MinusOneFavorByUserIdAndVideoId(userId int64, videoId int64) 
 		if err := tx.Exec("UPDATE videos SET favorite_count=favorite_count-1 WHERE id = ? AND favorite_count>0", videoId).Error; err != nil {
 			return err
 		}
-		if err := tx.Exec("DELETE FROM `user_favor_videos`  WHERE `user_info_id` = ? AND `video_id` = ?", userId, videoId).Error; err != nil {
+		if err := tx.Exec("DELETE FROM `favorite`  WHERE `user_info_id` = ? AND `video_id` = ?", userId, videoId).Error; err != nil {
 			return err
 		}
 		return nil
@@ -66,7 +66,7 @@ func (v *VideoDAO) QueryFavorVideoListByUserId(userId int64, videoList *[]*Video
 		return errors.New("QueryFavorVideoListByUserId videoList 空指针")
 	}
 	//多表查询，左连接得到结果，再映射到数据
-	if err := DB.Raw("SELECT v.* FROM user_favor_videos u , videos v WHERE u.user_info_id = ? AND u.video_id = v.id", userId).Scan(videoList).Error; err != nil {
+	if err := DB.Raw("SELECT v.* FROM favorite u , videos v WHERE u.user_info_id = ? AND u.video_id = v.id", userId).Scan(videoList).Error; err != nil {
 		return err
 	}
 	//如果id为0，则说明没有查到数据

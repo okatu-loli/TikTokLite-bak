@@ -94,8 +94,3 @@ func (p *PostCommentFlow) prepareData() error {
 	}
 	return err
 }
-
-//func (p *PostCommentFlow) packData() error {
-//	//填充字段
-//
-//}
