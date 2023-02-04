@@ -16,7 +16,7 @@ func CustomizedRegister(r *server.Hertz) {
 	douyin := r.Group("/douyin")
 	{
 		//使用中间件
-		//douyin.Use(basic_auth.BasicAuth(map[string]string{"test": "test"}))
+		//douyin.Usne(basic_auth.BasicAuth(map[string]string{"test": "test"}))
 		user := douyin.Group("/user")
 		{
 			user.POST("/register", handler.Register)
@@ -28,7 +28,10 @@ func CustomizedRegister(r *server.Hertz) {
 		video := douyin.Group("/publish")
 		{
 			video.Use(middleware.JwtMiddleware.MiddlewareFunc())
-			video.POST("action", handler.UploadVideo)
+			video.POST("/action", handler.UploadVideo)
+			video.GET("/list", handler.PublishList)
 		}
+
+		douyin.GET("/feed", handler.FeedList)
 	}
 }

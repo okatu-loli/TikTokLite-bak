@@ -13,6 +13,7 @@ import (
 	"github.com/bytedance/gopkg/util/logger"
 	"github.com/okatu-loli/TikTokLite/cmd/dal/db"
 	"github.com/okatu-loli/TikTokLite/config"
+	"github.com/okatu-loli/TikTokLite/internal/model"
 	"github.com/okatu-loli/TikTokLite/internal/service/util"
 	"github.com/qiniu/go-sdk/v7/auth/qbox"
 	"github.com/qiniu/go-sdk/v7/storage"
@@ -82,4 +83,22 @@ func UploadVideoService(file *multipart.FileHeader, title string, id uint) error
 		}
 	}()
 	return nil
+}
+
+func GetList(uesrId uint) ([]model.Video, error) {
+	vlr, err := db.GetVideoList(uesrId)
+	if err != nil {
+		logger.Error("GetList 获取视频失败")
+		return nil, err
+	}
+	return vlr, nil
+}
+
+func GetFeed() ([]model.Video, error) {
+	fe, err := db.GetFeed()
+	if err != nil {
+		logger.Error("GetFeed 获取视频失败")
+		return nil, err
+	}
+	return fe, nil
 }
