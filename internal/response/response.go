@@ -14,7 +14,7 @@ type CommentAction struct {
 	Comment model.Comment `json:"comment"`
 }
 
-type CommentList struct {
+type CommentListResponse struct {
 	CommonResponse
 	CommentList []model.Comment `json:"comment_list"`
 }
