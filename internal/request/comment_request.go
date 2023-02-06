@@ -16,4 +16,5 @@ type CommentActionParam struct {
 type CommentListParam struct {
 	Token   string `form:"token"`
 	VideoId int64  `form:"video_id"`
+	//Comments    *[]*model.Comment  `form:"comments"`
 }

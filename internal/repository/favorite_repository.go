@@ -8,10 +8,10 @@ import (
 )
 
 type IFavoriteRepository interface {
-	PlusOneFavorByUserIdAndVideoId(userId int64, videoId int64) error          // 增加点赞记录
-	MinusOneFavorByUserIdAndVideoId(userId int64, videoId int64) error         // 取消点赞记录
-	QueryFavorVideoListByUserId(userId int64, videoList *[]*model.Video) error //查询喜欢列表
-	CheckIsLike(userid int64, id2 int64) (bool, error)
+	PlusOneFavorByUserIdAndVideoId(userId int64, videoId int64) error   // 增加点赞记录
+	MinusOneFavorByUserIdAndVideoId(userId int64, videoId int64) error  // 取消点赞记录
+	QueryFavorVideoListByUserId(userId int64) ([]model.Favorite, error) //查询喜欢列表
+	CheckIsLike(userid int64, id2 int64) (bool, error)                  //判断
 }
 
 // FavoriteRepository UserRepository 定义一个结构体
@@ -55,19 +55,20 @@ func (f FavoriteRepository) MinusOneFavorByUserIdAndVideoId(userId int64, videoI
 	})
 }
 
-func (f FavoriteRepository) QueryFavorVideoListByUserId(userId int64, videoList *[]*model.Video) error {
-	if videoList == nil {
-		return errors.New("QueryFavorVideoListByUserId videoList 空指针")
+func (f FavoriteRepository) QueryFavorVideoListByUserId(userId int64) ([]model.Favorite, error) {
+	var videos []model.Favorite
+	if videos == nil {
+		return videos, errors.New("QueryFavorVideoListByUserId videoList 空指针")
 	}
 	//多表查询，左连接得到结果，再映射到数据
-	if err := db.DB.Raw("SELECT v.* FROM favorite u , video v WHERE u.user_id = ? AND u.video_id = v.id", userId).Scan(videoList).Error; err != nil {
-		return err
+	if err := db.DB.Raw("SELECT v.* FROM favorite u , video v WHERE u.user_id = ? AND u.video_id = v.id", userId).Scan(videos).Error; err != nil {
+		return videos, err
 	}
 	//如果id为0，则说明没有查到数据
-	if len(*videoList) == 0 || (*videoList)[0].ID == 0 {
-		return errors.New("点赞列表为空")
+	if len(videos) == 0 || (videos)[0].ID == 0 {
+		return videos, errors.New("点赞列表为空")
 	}
-	return nil
+	return videos, nil
 }
 
 // NewFavoriteRepository UserRepository构造函数

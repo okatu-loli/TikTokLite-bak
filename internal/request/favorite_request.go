@@ -9,7 +9,7 @@ type FavoriteActionParam struct {
 	ActionType int64  `form:"action_type"`
 }
 
-// FavoriteListParam 点赞列表相关参数
+// FavoriteListParam 喜欢列表相关参数
 type FavoriteListParam struct {
 	UserId int64  `form:"user_id"`
 	Token  string `form:"token"`

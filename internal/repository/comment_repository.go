@@ -8,9 +8,9 @@ import (
 )
 
 type ICommentRepository interface {
-	InsertComment(comment *model.Comment) error                                //添加评论
-	QueryCommentListByVideoId(videoId int64, comments *[]*model.Comment) error // 查看评论列表
-	DeleteCommentAndUpdateCountById(commentId, videoId int64) error            //删除评论
+	InsertComment(comment *model.Comment) error                       //添加评论
+	QueryCommentListByVideoId(videoId int64) ([]model.Comment, error) // 查看评论列表
+	DeleteCommentAndUpdateCountById(commentId, videoId int64) error   //删除评论
 	QueryCommentById(id int64, comment *model.Comment) error
 }
 
@@ -18,22 +18,22 @@ type CommentRepository struct {
 }
 
 // QueryCommentListByVideoId 获取评论列表
-func (c CommentRepository) QueryCommentListByVideoId(videoId int64, commentList *[]*model.Comment) error {
-
+func (c CommentRepository) QueryCommentListByVideoId(videoId int64) ([]model.Comment, error) {
+	var commentList []model.Comment
 	if commentList == nil {
-		return errors.New("QueryCommentListByVideoId comments空指针")
+		return nil, errors.New("QueryCommentListByVideoId comments空指针")
 	}
-	if err := db.DB.Model(&model.Comment{}).Where("video_id=?", videoId).Find(commentList).Error; err != nil {
-		return err
-	}
-	return nil
+	err := db.DB.Model(&model.Comment{}).Where("video_id=?", videoId).Find(commentList).Error
+	return commentList, err
+
+	//return nil ,err
 }
 
 // InsertComment 添加评论
 func (c CommentRepository) InsertComment(comment *model.Comment) error {
 	//添加评论并且更新数量
 	if comment == nil {
-		return errors.New("AddCommentAndUpdateCount comment空指针")
+		return errors.New("InsertComment comment空指针")
 	}
 	//执行事务
 	return db.DB.Transaction(func(tx *gorm.DB) error {
