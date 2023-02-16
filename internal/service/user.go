@@ -16,3 +16,11 @@ func Register(username string, password string) (*model.User, error) {
 
 	return user, nil
 }
+
+func FindUserById(id string) (*model.User, error) {
+	res, err := db.FindUserById(id)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}

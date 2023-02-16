@@ -57,3 +57,34 @@ func Register(ctx context.Context, c *app.RequestContext) {
 		"token":       tokenString,
 	})
 }
+
+func GetUserInfo(ctx context.Context, c *app.RequestContext) {
+	id := c.Query("user_id")
+	statusCode := 0 // 状态码
+	statusMsg := "" // 返回状态
+	name := ""
+	follow_count := 0
+	follower_count := 0
+	is_follow := false // 暂时还没写
+	user, err := service.FindUserById(id)
+	if err != nil {
+		statusCode = -1
+		statusMsg = err.Error()
+	} else {
+		name = user.UserName
+		follow_count = user.FollowCount
+		follower_count = user.FollowerCount
+
+	}
+	c.JSON(consts.StatusOK, utils.H{
+		"status_code": statusCode,
+		"status_msg":  statusMsg,
+		"user": utils.H{
+			"id":             id,
+			"name":           name,
+			"follow_count":   follow_count,
+			"follower_count": follower_count,
+			"is_follow":      is_follow,
+		},
+	})
+}

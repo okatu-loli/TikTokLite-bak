@@ -32,6 +32,8 @@ func InitJwt() {
 		Key: []byte("secret key"),
 		//过期时间
 		Timeout: time.Hour,
+		//token的获取源
+		TokenLookup: "query:token, header: Authorization",
 		//最大token刷新时间
 		MaxRefresh: time.Hour,
 		//登录的相应函数，ps在内置的登陆函数“LoginHandler”中，这个是最后一个被调用的函数

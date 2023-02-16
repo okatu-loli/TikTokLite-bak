@@ -20,6 +20,7 @@ func CustomizedRegister(r *server.Hertz) {
 			user.POST("/register", handler.Register)
 			//user.GET("/", handler.GetUserInfo)
 			user.POST("/login", middleware.JwtMiddleware.LoginHandler)
+			user.GET("", middleware.JwtMiddleware.MiddlewareFunc(), handler.GetUserInfo)
 		}
 
 		video := douyin.Group("/publish")

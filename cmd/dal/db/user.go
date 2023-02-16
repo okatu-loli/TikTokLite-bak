@@ -29,3 +29,14 @@ func CheckUser(username string, password string) ([]*model.User, error) {
 	}
 	return res, nil
 }
+
+// FindUserById 通过用户ID返回用户
+func FindUserById(userId string) (*model.User, error) {
+	res := new(model.User)
+
+	if err := DB.Where("id = ?", userId).Find(res).Error; err != nil {
+		return nil, err
+	}
+	return res, nil
+
+}
