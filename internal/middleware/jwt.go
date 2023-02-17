@@ -32,13 +32,10 @@ func InitJwt() {
 		Key: []byte("secret key"),
 		//过期时间
 		Timeout: time.Hour,
+		//token的获取源
+		TokenLookup: "query:token, header: Authorization",
 		//最大token刷新时间
 		MaxRefresh: time.Hour,
-		//token在哪里被发现
-		//ps:这里有疑问啊，我如果把下面的参数改成head:Authorization,会找不到参数，估计是我测错了，先暂时这么放了
-		TokenLookup: "form:token",
-		// //在请求头中，获取token的前缀
-		// TokenHeadName: "token",
 		//登录的相应函数，ps在内置的登陆函数“LoginHandler”中，这个是最后一个被调用的函数
 		LoginResponse: func(ctx context.Context, c *app.RequestContext, code int, token string, expire time.Time) {
 			id, _ := c.Get("id")
