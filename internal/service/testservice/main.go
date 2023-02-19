@@ -1,7 +1,7 @@
 package main
 
 import (
-	"TikTokLiteV2/handler"
+	"TikTokLiteV2/internal/service/testservice/handler"
 	tiktok "TikTokLiteV2/kitex_gen/tiktok/testservice"
 	"log"
 )
