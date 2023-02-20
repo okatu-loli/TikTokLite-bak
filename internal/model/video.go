@@ -2,6 +2,7 @@ package model
 
 import (
 	"github.com/okatu-loli/TikTokLite/cmd/dal/db"
+  "gorm.io/gorm"
 	"log"
 	"sync"
 )
