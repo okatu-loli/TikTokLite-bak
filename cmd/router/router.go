@@ -19,10 +19,10 @@ func CustomizedRegister(r *server.Hertz) {
 		//douyin.Use(basic_auth.BasicAuth(map[string]string{"test": "test"}))
 		user := douyin.Group("/user")
 		{
-			user.POST("/register", handler.Register)
+			user.POST("/register/", handler.Register)
 			//user.POST("/login", handler.Login)
 			//user.GET("/", handler.GetUserInfo)
-			user.POST("/login", middleware.JwtMiddleware.LoginHandler)
+			user.POST("/login/", middleware.JwtMiddleware.LoginHandler)
 			user.GET("", middleware.JwtMiddleware.MiddlewareFunc(), handler.GetUserInfo)
 		}
 
