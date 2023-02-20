@@ -25,8 +25,9 @@ func Init() {
 	)
 	DB, err = gorm.Open(mysql.Open(config.MySQLDefaultDSN),
 		&gorm.Config{
-			PrepareStmt: true,
-			Logger:      gormlogrus,
+			PrepareStmt:                              true,
+			Logger:                                   gormlogrus,
+			DisableForeignKeyConstraintWhenMigrating: true,
 		},
 	)
 	if err != nil {

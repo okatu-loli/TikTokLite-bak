@@ -5,4 +5,5 @@ const (
 	OSSAccessKey    = "PSpnqZ0Lhjt_eanvYNofcSe52irksDbsYvW4fftJ"
 	OSSSecretKey    = "esU_PwGUDsxiGVWJ9u5tZ0KN0xIjcQt34cQ2AVkW"
 	OSSScope        = "little-tiktok-sixdan"
+	OSSPreUrl       = "http://rp18v6c72.hb-bkt.clouddn.com/"
 )
