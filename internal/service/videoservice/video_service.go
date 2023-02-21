@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/go-redis/redis/v8"
 	"github.com/okatu-loli/TikTokLite/cmd/dal/rdb"
+	"github.com/okatu-loli/TikTokLite/internal/repository"
 	"github.com/okatu-loli/TikTokLite/internal/service/util"
 	"mime/multipart"
 	"strconv"
@@ -15,7 +16,6 @@ import (
 	"time"
 
 	"github.com/bytedance/gopkg/util/logger"
-	"github.com/okatu-loli/TikTokLite/cmd/dal/db"
 	"github.com/okatu-loli/TikTokLite/internal/model"
 	"github.com/qiniu/go-sdk/v7/auth/qbox"
 	"github.com/qiniu/go-sdk/v7/storage"
@@ -98,13 +98,13 @@ func (v VideoService) UploadVideoService(file *multipart.FileHeader, title strin
 			logger.Error("UploadVideoService 上传视频数据失败")
 			return
 		}
-		err3 := db.CreateVideo(title, ref.Key, coverName, id, oss.PreUrl)
+		err3 := repository.CreateVideo(title, ref.Key, coverName, id, oss.PreUrl)
 		if err3 != nil {
 			logger.Error("UploadVideoService 保存视频数据失败")
 			return
 			// return errors.New("保存视频数据失败")
 		}
-		vlr, err := db.GetVideoList(id)
+		vlr, err := repository.GetVideoList(id)
 		if err != nil {
 			logger.Error("feed 填写缓存失败")
 			return
@@ -135,7 +135,7 @@ func (v VideoService) GetList(uesrId uint) ([]model.Video, error) {
 		return r, nil
 	}
 
-	vlr, err := db.GetVideoList(uesrId)
+	vlr, err := repository.GetVideoList(uesrId)
 	if err != nil {
 		logger.Error("GetList 获取视频失败")
 		return nil, err
@@ -164,7 +164,7 @@ func (v VideoService) GetFeed() ([]model.Video, error) {
 		logger.Debug("我走的是缓存")
 		return r, nil
 	}
-	fe, err := db.GetFeed()
+	fe, err := repository.GetFeed()
 	if err != nil {
 		logger.Error("GetFeed 获取视频失败")
 		return nil, err
