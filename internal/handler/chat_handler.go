@@ -71,7 +71,7 @@ func (ch ChatHandler) ChatMeg(ctx context.Context, c *app.RequestContext) {
 			ToUserId:   message.ToUserId,
 			FromUserId: message.UserId,
 			Content:    message.Content,
-			CreateTime: message.CreatedAt,
+			CreateTime: message.CreatedAt.Format("2006-01-02 15:04:05"),
 		})
 	}
 	c.JSON(consts.StatusOK, utils.H{
