@@ -70,6 +70,7 @@ func InitJwt() {
 		IdentityHandler: func(ctx context.Context, c *app.RequestContext) interface{} {
 			claims := jwt.ExtractClaims(ctx, c)
 			id := claims[IdentityKey].(float64)
+			c.Set("user_id", id)
 			return &model.User{
 				Model: gorm.Model{ID: uint(id)},
 			}
