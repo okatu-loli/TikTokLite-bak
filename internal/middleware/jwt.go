@@ -3,7 +3,6 @@ package middleware
 import (
 	"context"
 	"errors"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -70,7 +69,7 @@ func InitJwt() {
 		IdentityHandler: func(ctx context.Context, c *app.RequestContext) interface{} {
 			claims := jwt.ExtractClaims(ctx, c)
 			id := claims[IdentityKey].(float64)
-			c.Set("user_id", id)
+			c.Set("user_id", int64(id))
 			return &model.User{
 				Model: gorm.Model{ID: uint(id)},
 			}
@@ -78,7 +77,6 @@ func InitJwt() {
 		//给token自定义的添加负载信息，这里存了id
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
 			if v, ok := data.(*model.User); ok {
-				fmt.Println("存入成功", v.ID)
 				return jwt.MapClaims{
 					IdentityKey: v.ID,
 				}
