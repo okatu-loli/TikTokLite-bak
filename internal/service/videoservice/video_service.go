@@ -130,10 +130,28 @@ func (v VideoService) GetList(uesrId uint) ([]model.Video, error) {
 }
 
 func (v VideoService) GetFeed() ([]model.Video, error) {
+
+	result, err := rdb.RDB.Get(context.Background(), "video_list_feed").Result()
+	if err != nil && err != redis.Nil {
+		return nil, err
+	}
+	if err != redis.Nil {
+		var r []model.Video
+		err = json.Unmarshal([]byte(result), &r)
+		if err != nil {
+			return nil, err
+		}
+		logger.Debug("我走的是缓存")
+		return r, nil
+	}
 	fe, err := db.GetFeed()
 	if err != nil {
 		logger.Error("GetFeed 获取视频失败")
 		return nil, err
 	}
+	go func() {
+		data, _ := json.Marshal(fe)
+		rdb.RDB.Set(context.Background(), "video_list_feed", data, time.Minute*30)
+	}()
 	return fe, nil
 }
