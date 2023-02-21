@@ -31,10 +31,10 @@ func Init() {
 		},
 	)
 	if err != nil {
-		panic(err)
+		//panic(err)
 	}
 
 	if err := DB.Use(tracing.NewPlugin()); err != nil {
-		panic(err)
+		//panic(err)
 	}
 }
