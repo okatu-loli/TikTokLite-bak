@@ -24,3 +24,13 @@ func SendMsg(userId uint, toUserId uint, content string, now time.Time) (uint, e
 
 	return msg.ID, nil
 }
+
+func GetMsg(userId uint, toUserId uint) ([]model.Message, error) {
+	var res []model.Message
+	err := db.DB.Model(&model.Message{}).Where("user_id = ?", userId).Where("to_user_id = ?", toUserId).Find(&res).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}

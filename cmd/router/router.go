@@ -42,6 +42,7 @@ func CustomizedRegister(r *server.Hertz) {
 		{
 			message.Use(middleware.JwtMiddleware.MiddlewareFunc())
 			message.POST("/action/", chatHandler.SendChat)
+			message.GET("/chat/", chatHandler.ChatMeg)
 		}
 
 		douyin.GET("/feed", feedHandler.FeedList)
