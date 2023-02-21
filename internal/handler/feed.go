@@ -11,11 +11,23 @@ import (
 	"github.com/okatu-loli/TikTokLite/internal/service/videoservice"
 )
 
-func FeedList(ctx context.Context, c *app.RequestContext) {
+type IFeedHandler interface {
+	FeedList(ctx context.Context, c *app.RequestContext)
+}
+
+type FeedHandler struct {
+	videoService videoservice.IVideoService
+}
+
+func NewFeedHandler() IFeedHandler {
+	return FeedHandler{videoService: videoservice.NewVideoService()}
+}
+
+func (f FeedHandler) FeedList(ctx context.Context, c *app.RequestContext) {
 	statusCode := 0 // 状态码
 	statusMsg := "" // 返回状态
 
-	list, err := videoservice.GetFeed()
+	list, err := f.videoService.GetFeed()
 	if err != nil {
 		statusCode = -1
 		statusMsg = err.Error()

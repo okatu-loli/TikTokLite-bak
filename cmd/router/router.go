@@ -10,6 +10,10 @@ import (
 
 // CustomizedRegister registers customize routers.
 func CustomizedRegister(r *server.Hertz) {
+
+	videoHandler := handler.NewVideoHandler()
+	feedHandler := handler.NewFeedHandler()
+
 	r.GET("/ping", handler.Ping)
 
 	// your code ...
@@ -29,10 +33,10 @@ func CustomizedRegister(r *server.Hertz) {
 		video := douyin.Group("/publish")
 		{
 			video.Use(middleware.JwtMiddleware.MiddlewareFunc())
-			video.POST("/action/", handler.UploadVideo)
-			video.GET("/list", handler.PublishList)
+			video.POST("/action/", videoHandler.UploadVideo)
+			video.GET("/list", videoHandler.PublishList)
 		}
 
-		douyin.GET("/feed", handler.FeedList)
+		douyin.GET("/feed", feedHandler.FeedList)
 	}
 }

@@ -12,8 +12,8 @@ func CreateVideo(title string, playUrl string, coverUrl string, auId uint) error
 	result := DB.Create(&model.Video{
 		Title:    title,
 		AuthorId: auId,
-		PlayUrl:  config.OSSPreUrl + playUrl,
-		CoverUrl: config.OSSPreUrl + coverUrl,
+		PlayUrl:  config.OSSPreUrl1 + playUrl,
+		CoverUrl: config.OSSPreUrl1 + coverUrl,
 	})
 	fmt.Println(result.RowsAffected)
 	fmt.Println(result.Error)

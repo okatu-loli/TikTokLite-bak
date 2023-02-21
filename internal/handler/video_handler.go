@@ -14,15 +14,28 @@ import (
 	"github.com/okatu-loli/TikTokLite/internal/service/videoservice"
 )
 
+type IVideoHandler interface {
+	UploadVideo(ctx context.Context, c *app.RequestContext)
+	PublishList(ctx context.Context, c *app.RequestContext)
+}
+
+type VideoHandle struct {
+	videoservice videoservice.IVideoService
+}
+
+func NewVideoHandler() IVideoHandler {
+	return VideoHandle{videoservice: videoservice.NewVideoService()}
+}
+
 // UploadVideo 上传视频绑定接口
-func UploadVideo(ctx context.Context, c *app.RequestContext) {
+func (v VideoHandle) UploadVideo(ctx context.Context, c *app.RequestContext) {
 	video, _ := c.FormFile("file")
 	title := c.PostForm("title")
 	statusCode := 0 // 状态码
 	statusMsg := "" // 返回状态
 
 	user, _ := c.Get("id")
-	err := videoservice.UploadVideoService(video, title, user.(*model.User).ID)
+	err := v.videoservice.UploadVideoService(video, title, user.(*model.User).ID)
 	if err != nil {
 		statusCode = -1 //暂定
 		statusMsg = err.Error()
@@ -36,7 +49,7 @@ func UploadVideo(ctx context.Context, c *app.RequestContext) {
 	})
 }
 
-func PublishList(ctx context.Context, c *app.RequestContext) {
+func (v VideoHandle) PublishList(ctx context.Context, c *app.RequestContext) {
 	user, err := strconv.Atoi(c.Query("user_id"))
 	statusCode := 0 // 状态码
 	statusMsg := "" // 返回状态
@@ -49,7 +62,7 @@ func PublishList(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 
-	list, err2 := videoservice.GetList(uint(user))
+	list, err2 := v.videoservice.GetList(uint(user))
 	if err2 != nil {
 		statusCode = -1
 		statusMsg = err2.Error()

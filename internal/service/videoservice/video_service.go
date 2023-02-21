@@ -3,8 +3,12 @@ package videoservice
 import (
 	"context"
 	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/go-redis/redis/v8"
+	"github.com/okatu-loli/TikTokLite/cmd/dal/rdb"
+	"github.com/okatu-loli/TikTokLite/internal/service/util"
 	"mime/multipart"
 	"strconv"
 	"strings"
@@ -14,12 +18,25 @@ import (
 	"github.com/okatu-loli/TikTokLite/cmd/dal/db"
 	"github.com/okatu-loli/TikTokLite/config"
 	"github.com/okatu-loli/TikTokLite/internal/model"
-	"github.com/okatu-loli/TikTokLite/internal/service/util"
 	"github.com/qiniu/go-sdk/v7/auth/qbox"
 	"github.com/qiniu/go-sdk/v7/storage"
 )
 
-func UploadVideoService(file *multipart.FileHeader, title string, id uint) error {
+type IVideoService interface {
+	UploadVideoService(file *multipart.FileHeader, title string, id uint) error
+	GetList(uesrId uint) ([]model.Video, error)
+	GetFeed() ([]model.Video, error)
+}
+
+type VideoService struct {
+}
+
+func NewVideoService() IVideoService {
+	return VideoService{}
+}
+func (v VideoService) UploadVideoService(file *multipart.FileHeader, title string, id uint) error {
+
+	//
 
 	//校验文件
 	filename := file.Filename
@@ -42,15 +59,15 @@ func UploadVideoService(file *multipart.FileHeader, title string, id uint) error
 	filename = fmt.Sprintf("tiktok/%4d/%02d/%02d/", t.Year(), t.Month(), t.Day()) + strconv.FormatUint(w, 10) + "." + suffix
 	//生成封面名
 	coverName := fmt.Sprintf("tiktok/%4d/%02d/%02d/cover/", t.Year(), t.Month(), t.Day()) + strconv.FormatUint(w, 10) + ".pdf"
-	entry := config.OSSScope + ":" + coverName
+	entry := config.OSSScope1 + ":" + coverName
 	encodedEntryURI := base64.StdEncoding.EncodeToString([]byte(entry))
 
 	//配置oss
 	putPolicy := &storage.PutPolicy{
-		Scope:         config.OSSScope,
+		Scope:         config.OSSScope1,
 		PersistentOps: "vframe/jpg/offset/1|saveas/" + encodedEntryURI,
 	}
-	mac := qbox.NewMac(config.OSSAccessKey, config.OSSSecretKey)
+	mac := qbox.NewMac(config.OSSAccessKey1, config.OSSSecretKey1)
 	upToken := putPolicy.UploadToken(mac)
 
 	cfg := storage.Config{}
@@ -85,16 +102,34 @@ func UploadVideoService(file *multipart.FileHeader, title string, id uint) error
 	return nil
 }
 
-func GetList(uesrId uint) ([]model.Video, error) {
+func (v VideoService) GetList(uesrId uint) ([]model.Video, error) {
+	result, err := rdb.RDB.Get(context.Background(), "video_list"+strconv.Itoa(int(uesrId))).Result()
+	if err != nil && err != redis.Nil {
+		return nil, err
+	}
+	if err != redis.Nil {
+		var r []model.Video
+		err = json.Unmarshal([]byte(result), &r)
+		if err != nil {
+			return nil, err
+		}
+		logger.Debug("我走的是缓存")
+		return r, nil
+	}
+
 	vlr, err := db.GetVideoList(uesrId)
 	if err != nil {
 		logger.Error("GetList 获取视频失败")
 		return nil, err
 	}
+	go func() {
+		data, _ := json.Marshal(vlr)
+		rdb.RDB.Set(context.Background(), "video_list"+strconv.Itoa(int(uesrId)), data, time.Second*30)
+	}()
 	return vlr, nil
 }
 
-func GetFeed() ([]model.Video, error) {
+func (v VideoService) GetFeed() ([]model.Video, error) {
 	fe, err := db.GetFeed()
 	if err != nil {
 		logger.Error("GetFeed 获取视频失败")
