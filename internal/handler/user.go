@@ -11,6 +11,7 @@ import (
 	"github.com/okatu-loli/TikTokLite/internal/model"
 	"github.com/okatu-loli/TikTokLite/internal/service"
 	"github.com/okatu-loli/TikTokLite/internal/service/util"
+	"strconv"
 )
 
 func Register(ctx context.Context, c *app.RequestContext) {
@@ -76,6 +77,13 @@ func GetUserInfo(ctx context.Context, c *app.RequestContext) {
 		follower_count = user.FollowerCount
 
 	}
+
+	myId, exist := c.Get("user_id")
+	fmt.Println(myId, exist)
+	if exist == true {
+		is_follow = service.IsFollow(strconv.FormatInt(myId.(int64), 10), id)
+	}
+
 	c.JSON(consts.StatusOK, utils.H{
 		"status_code": statusCode,
 		"status_msg":  statusMsg,

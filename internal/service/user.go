@@ -24,3 +24,7 @@ func FindUserById(id string) (*model.User, error) {
 	}
 	return res, nil
 }
+
+func IsFollow(myId string, id string) bool {
+	return db.IsFollow(myId, id)
+}
