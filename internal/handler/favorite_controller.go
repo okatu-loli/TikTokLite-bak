@@ -1,7 +1,8 @@
 package handler
 
 import (
-	"github.com/gin-gonic/gin"
+	"context"
+	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/okatu-loli/TikTokLite/internal/request"
 	"github.com/okatu-loli/TikTokLite/internal/response"
 	"github.com/okatu-loli/TikTokLite/internal/service/favorite"
@@ -10,8 +11,8 @@ import (
 )
 
 type IFavoriteController interface {
-	FavoriteAction(c *gin.Context)    // 点赞操作
-	FavoriteVideoList(c *gin.Context) // 获取点赞列表
+	FavoriteAction(ctx context.Context, c *app.RequestContext)    // 点赞操作
+	FavoriteVideoList(ctx context.Context, c *app.RequestContext) // 获取点赞列表
 }
 
 type FavoriteController struct {
@@ -24,10 +25,10 @@ func NewFavoriteController() IFavoriteController {
 }
 
 // FavoriteAction 点赞操作
-func (f FavoriteController) FavoriteAction(c *gin.Context) {
+func (f FavoriteController) FavoriteAction(ctx context.Context, c *app.RequestContext) {
 
 	var favoriteRequest request.FavoriteActionParam
-	err := c.ShouldBindQuery(&favoriteRequest)
+	err := c.BindAndValidate(&favoriteRequest)
 	if err != nil {
 		log.Printf("FavoriteAction|参数错误|%v", err)
 		return
@@ -42,9 +43,9 @@ func (f FavoriteController) FavoriteAction(c *gin.Context) {
 }
 
 // FavoriteVideoList 获取用户点赞的视频
-func (f FavoriteController) FavoriteVideoList(c *gin.Context) {
+func (f FavoriteController) FavoriteVideoList(ctx context.Context, c *app.RequestContext) {
 	var videoRequest request.FavoriteListParam
-	err := c.ShouldBindQuery(&videoRequest)
+	err := c.BindAndValidate(&videoRequest)
 	if err != nil {
 		log.Printf("ListVideo|请求参数错误|%v", err)
 		c.JSON(http.StatusBadRequest, response.ErrorMessage{

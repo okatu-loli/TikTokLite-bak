@@ -1,7 +1,8 @@
 package handler
 
 import (
-	"github.com/gin-gonic/gin"
+	"context"
+	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/okatu-loli/TikTokLite/internal/request"
 	"github.com/okatu-loli/TikTokLite/internal/service/comment"
 	"log"
@@ -9,18 +10,19 @@ import (
 )
 
 type ICommentController interface {
-	CommentPost(c *gin.Context) // 发表评论
-	ListComment(c *gin.Context) // 获取评论列表
+	CommentPost(ctx context.Context, c *app.RequestContext) // 发表评论
+	ListComment(ctx context.Context, c *app.RequestContext) // 获取评论列表
 }
 
 type CommentController struct {
 	CommentService comment.ICommentService
 }
 
-func (c2 CommentController) ListComment(c *gin.Context) {
+func (c2 CommentController) ListComment(ctx context.Context, c *app.RequestContext) {
 	var listRequest request.CommentListParam
 	//BindQuery会自动返回400状态码并将Content-Type 被设置为 text/plain; charset=utf-8，ShouldBindQuery则不会。
-	err := c.ShouldBindQuery(&listRequest)
+	//BindQuery改成了BindAndValidate
+	err := c.BindAndValidate(&listRequest)
 	if err != nil {
 		log.Printf("PostComment|参数错误|%v", listRequest)
 		return
@@ -30,9 +32,9 @@ func (c2 CommentController) ListComment(c *gin.Context) {
 	c.JSON(http.StatusOK, commentListResponse)
 }
 
-func (c2 CommentController) CommentPost(c *gin.Context) {
+func (c2 CommentController) CommentPost(ctx context.Context, c *app.RequestContext) {
 	var postRequest request.CommentActionParam
-	err := c.ShouldBindQuery(&postRequest)
+	err := c.BindAndValidate(&postRequest)
 	if err != nil {
 		log.Printf("PostComment|参数错误|%v", postRequest)
 		return
