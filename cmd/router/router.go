@@ -29,7 +29,7 @@ func CustomizedRegister(r *server.Hertz) {
 		video := douyin.Group("/publish")
 		{
 			video.Use(middleware.JwtMiddleware.MiddlewareFunc())
-			video.POST("/action", handler.UploadVideo)
+			video.POST("/action/", handler.UploadVideo)
 			video.GET("/list", handler.PublishList)
 		}
 
