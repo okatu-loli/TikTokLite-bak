@@ -34,5 +34,22 @@ func CustomizedRegister(r *server.Hertz) {
 		}
 
 		douyin.GET("/feed", handler.FeedList)
+
+		commentController := handler.NewCommentController()
+		comment := douyin.Group("/action")
+		{
+			comment.Use(middleware.JwtMiddleware.MiddlewareFunc())
+			comment.GET("/list/", commentController.ListComment)
+			comment.POST("/action/", commentController.CommentPost)
+		}
+
+		favoriteController := handler.NewFavoriteController()
+		favorite := douyin.Group("/favorite")
+		{
+			favorite.Use(middleware.JwtMiddleware.MiddlewareFunc())
+			favorite.GET("/list/", favoriteController.FavoriteVideoList)
+			favorite.POST("/action/", favoriteController.FavoriteAction)
+		}
+
 	}
 }
