@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"fmt"
+	"github.com/bytedance/gopkg/util/logger"
 	"github.com/okatu-loli/TikTokLite/cmd/dal/db"
 
 	"github.com/okatu-loli/TikTokLite/internal/model"
@@ -15,8 +15,8 @@ func CreateVideo(title string, playUrl string, coverUrl string, auId uint, preUr
 		PlayUrl:  preUrl + playUrl,
 		CoverUrl: preUrl + coverUrl,
 	})
-	fmt.Println(result.RowsAffected)
-	fmt.Println(result.Error)
+	logger.Info(result.RowsAffected)
+	logger.Info(result.Error)
 	if result.Error != nil {
 		return result.Error
 	}

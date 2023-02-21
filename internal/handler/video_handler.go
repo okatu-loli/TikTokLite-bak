@@ -20,7 +20,7 @@ type IVideoHandler interface {
 }
 
 type VideoHandle struct {
-	videoservice videoservice.IVideoService
+	videoservice videoservice.IVideoServiceImpl
 }
 
 func NewVideoHandler() IVideoHandler {

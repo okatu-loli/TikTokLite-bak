@@ -16,7 +16,7 @@ type IFeedHandler interface {
 }
 
 type FeedHandler struct {
-	videoService videoservice.IVideoService
+	videoService videoservice.IVideoServiceImpl
 }
 
 func NewFeedHandler() IFeedHandler {

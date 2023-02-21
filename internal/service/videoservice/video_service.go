@@ -21,7 +21,7 @@ import (
 	"github.com/qiniu/go-sdk/v7/storage"
 )
 
-type IVideoService interface {
+type IVideoServiceImpl interface {
 	UploadVideoService(file *multipart.FileHeader, title string, id uint) error
 	GetList(uesrId uint) ([]model.Video, error)
 	GetFeed() ([]model.Video, error)
@@ -30,7 +30,7 @@ type IVideoService interface {
 type VideoService struct {
 }
 
-func NewVideoService() IVideoService {
+func NewVideoService() IVideoServiceImpl {
 	return VideoService{}
 }
 func (v VideoService) UploadVideoService(file *multipart.FileHeader, title string, id uint) error {

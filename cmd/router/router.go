@@ -13,6 +13,7 @@ func CustomizedRegister(r *server.Hertz) {
 
 	videoHandler := handler.NewVideoHandler()
 	feedHandler := handler.NewFeedHandler()
+	chatHandler := handler.NewChatHandler()
 
 	r.GET("/ping", handler.Ping)
 
@@ -35,6 +36,12 @@ func CustomizedRegister(r *server.Hertz) {
 			video.Use(middleware.JwtMiddleware.MiddlewareFunc())
 			video.POST("/action/", videoHandler.UploadVideo)
 			video.GET("/list", videoHandler.PublishList)
+		}
+
+		message := douyin.Group("/message")
+		{
+			message.Use(middleware.JwtMiddleware.MiddlewareFunc())
+			message.POST("/action/", chatHandler.SendChat)
 		}
 
 		douyin.GET("/feed", feedHandler.FeedList)
