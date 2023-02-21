@@ -34,5 +34,17 @@ func CustomizedRegister(r *server.Hertz) {
 		}
 
 		douyin.GET("/feed", handler.FeedList)
+
+		relation := douyin.Group("/relation")
+		{
+			relation.Use(middleware.JwtMiddleware.MiddlewareFunc())
+			relation.POST("/action/", handler.PostFollowActionHandler)
+
+			relation.GET("/follow/list", handler.QueryFollowListHandler)
+
+			relation.GET("/follower/list", handler.QueryFollowerHandler)
+
+			relation.GET("/friend/list")
+		}
 	}
 }
