@@ -75,7 +75,7 @@ func (v VideoHandle) PublishList(ctx context.Context, c *app.RequestContext) {
 	}
 	statusCode = 0
 	statusMsg = "成功"
-	videoList := []response.VideoRes{}
+	var videoList []response.VideoRes
 	for _, video := range list {
 		videoList = append(videoList, response.VideoRes{
 			ID:    video.ID,
@@ -83,14 +83,14 @@ func (v VideoHandle) PublishList(ctx context.Context, c *app.RequestContext) {
 			Author: response.UserInfoRes{
 				ID:            video.User.ID,
 				UserName:      video.User.UserName,
-				FollowCount:   0,
-				FollowerCount: 0,
+				FollowCount:   video.User.FollowCount,
+				FollowerCount: video.User.FollowerCount,
 				IsFollow:      false,
 			},
 			PlayUrl:       video.PlayUrl,
 			CoverUrl:      video.CoverUrl,
-			FavoriteCount: 0,
-			CommentCount:  0,
+			FavoriteCount: video.FavoriteCount,
+			CommentCount:  video.CommentCount,
 		})
 	}
 	c.JSON(consts.StatusOK, utils.H{

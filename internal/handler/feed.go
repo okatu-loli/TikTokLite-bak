@@ -33,7 +33,7 @@ func (f FeedHandler) FeedList(ctx context.Context, c *app.RequestContext) {
 		statusMsg = err.Error()
 		c.JSON(consts.StatusInternalServerError, utils.H{
 			"status_code": http.StatusBadRequest,
-			"status_msg":  "拉取视频列表失败",
+			"status_msg":  statusMsg,
 			"error":       err.Error(),
 		})
 		return
@@ -48,14 +48,14 @@ func (f FeedHandler) FeedList(ctx context.Context, c *app.RequestContext) {
 			Author: response.UserInfoRes{
 				ID:            video.User.ID,
 				UserName:      video.User.UserName,
-				FollowCount:   0,
-				FollowerCount: 0,
+				FollowCount:   video.User.FollowCount,
+				FollowerCount: video.User.FollowerCount,
 				IsFollow:      false,
 			},
 			PlayUrl:       video.PlayUrl,
 			CoverUrl:      video.CoverUrl,
-			FavoriteCount: 0,
-			CommentCount:  0,
+			FavoriteCount: video.FavoriteCount,
+			CommentCount:  video.CommentCount,
 		})
 	}
 	c.JSON(consts.StatusOK, utils.H{

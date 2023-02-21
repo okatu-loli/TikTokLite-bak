@@ -13,10 +13,6 @@ import (
 	"github.com/cloudwego/hertz/pkg/app/server"
 )
 
-type Text struct {
-	Val string
-}
-
 func main() {
 	h := server.Default()
 	h.Use(cors.New(cors.Config{

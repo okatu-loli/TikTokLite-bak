@@ -47,10 +47,7 @@ type HashRing struct {
 	sortedNodes    []uint32          // 从小到大排序后的所有节点哈希值切片
 }
 
-/*
- * 作用：在哈希环上添加单个服务器节点（包含虚拟节点）的方法
- * 入参：服务器地址
- */
+// 添加节点
 func (hr *HashRing) addNode(masterNode string) {
 
 	// 为每台服务器生成数量为 replicateCount-1 个虚拟节点
@@ -70,6 +67,7 @@ func (hr *HashRing) addNode(masterNode string) {
 	})
 }
 
+// 批量添加节点
 func (hr *HashRing) addNodes(masterNodes []string) {
 	if len(masterNodes) > 0 {
 		for _, node := range masterNodes {
@@ -78,10 +76,7 @@ func (hr *HashRing) addNodes(masterNodes []string) {
 	}
 }
 
-/*
- * 作用：从哈希环上移除单个服务器节点（包含虚拟节点）的方法
- * 入参：服务器地址
- */
+// 删除节点
 func (hr *HashRing) removeNode(masterNode string) {
 
 	// 移除时需要将服务器的实际节点和虚拟节点一同移除
@@ -97,12 +92,8 @@ func (hr *HashRing) removeNode(masterNode string) {
 	}
 }
 
-/*
- * 作用：给定一个客户端地址获取应当处理其请求的服务器的地址
- * 入参：客户端地址
- * 返回：应当处理该客户端请求的服务器的地址
- */
-func (hr *HashRing) getNode(key string) string {
+// GetNode 根据一致性hash获取节点
+func (hr *HashRing) GetNode(key string) string {
 
 	if len(hr.nodes) == 0 {
 		return ""
@@ -127,11 +118,7 @@ func (hr *HashRing) getNode(key string) string {
 	return masterNode
 }
 
-/*
- * 作用：哈希函数（这里使用 crc32 算法来实现，返回的是一个 uint32 整型）
- * 入参：节点或客户端地址
- * 返回：地址所对应的哈希值
- */
+// 获取hashkey，参数是节点和客户端地址
 func (hr *HashRing) hashKey(key string) uint32 {
 	scratch := []byte(key)
 	return crc32.ChecksumIEEE(scratch)
@@ -163,3 +150,9 @@ func New(nodes []string, replicateCount int) *HashRing {
 
 	return hr
 }
+
+var index = []string{
+	"0",
+	"1",
+}
+var Ring = New(index, 100)

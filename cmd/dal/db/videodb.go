@@ -3,17 +3,16 @@ package db
 import (
 	"fmt"
 
-	"github.com/okatu-loli/TikTokLite/config"
 	"github.com/okatu-loli/TikTokLite/internal/model"
 )
 
 // CreateVideo 保存视频信息
-func CreateVideo(title string, playUrl string, coverUrl string, auId uint) error {
+func CreateVideo(title string, playUrl string, coverUrl string, auId uint, preUrl string) error {
 	result := DB.Create(&model.Video{
 		Title:    title,
 		AuthorId: auId,
-		PlayUrl:  config.OSSPreUrl1 + playUrl,
-		CoverUrl: config.OSSPreUrl1 + coverUrl,
+		PlayUrl:  preUrl + playUrl,
+		CoverUrl: preUrl + coverUrl,
 	})
 	fmt.Println(result.RowsAffected)
 	fmt.Println(result.Error)

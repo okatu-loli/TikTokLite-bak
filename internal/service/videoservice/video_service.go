@@ -16,7 +16,6 @@ import (
 
 	"github.com/bytedance/gopkg/util/logger"
 	"github.com/okatu-loli/TikTokLite/cmd/dal/db"
-	"github.com/okatu-loli/TikTokLite/config"
 	"github.com/okatu-loli/TikTokLite/internal/model"
 	"github.com/qiniu/go-sdk/v7/auth/qbox"
 	"github.com/qiniu/go-sdk/v7/storage"
@@ -36,7 +35,10 @@ func NewVideoService() IVideoService {
 }
 func (v VideoService) UploadVideoService(file *multipart.FileHeader, title string, id uint) error {
 
-	//
+	//获取负载均衡节点
+	node := util.Ring.GetNode(time.Now().String())
+	index, _ := strconv.Atoi(node)
+	oss := util.OSSNodes[index]
 
 	//校验文件
 	filename := file.Filename
@@ -59,15 +61,15 @@ func (v VideoService) UploadVideoService(file *multipart.FileHeader, title strin
 	filename = fmt.Sprintf("tiktok/%4d/%02d/%02d/", t.Year(), t.Month(), t.Day()) + strconv.FormatUint(w, 10) + "." + suffix
 	//生成封面名
 	coverName := fmt.Sprintf("tiktok/%4d/%02d/%02d/cover/", t.Year(), t.Month(), t.Day()) + strconv.FormatUint(w, 10) + ".pdf"
-	entry := config.OSSScope1 + ":" + coverName
+	entry := oss.Scope + ":" + coverName
 	encodedEntryURI := base64.StdEncoding.EncodeToString([]byte(entry))
 
 	//配置oss
 	putPolicy := &storage.PutPolicy{
-		Scope:         config.OSSScope1,
+		Scope:         oss.Scope,
 		PersistentOps: "vframe/jpg/offset/1|saveas/" + encodedEntryURI,
 	}
-	mac := qbox.NewMac(config.OSSAccessKey1, config.OSSSecretKey1)
+	mac := qbox.NewMac(oss.AccessKey, oss.SecretKey)
 	upToken := putPolicy.UploadToken(mac)
 
 	cfg := storage.Config{}
@@ -91,13 +93,29 @@ func (v VideoService) UploadVideoService(file *multipart.FileHeader, title strin
 		//使用oss
 		ref := storage.PutRet{}
 		rve := storage.RputV2Extra{}
-		resumeUploader.Put(context.Background(), &ref, upToken, filename, f, file.Size, &rve)
-		err2 := db.CreateVideo(title, ref.Key, coverName, id)
+		err2 := resumeUploader.Put(context.Background(), &ref, upToken, filename, f, file.Size, &rve)
 		if err2 != nil {
+			logger.Error("UploadVideoService 上传视频数据失败")
+			return
+		}
+		err3 := db.CreateVideo(title, ref.Key, coverName, id, oss.PreUrl)
+		if err3 != nil {
 			logger.Error("UploadVideoService 保存视频数据失败")
 			return
 			// return errors.New("保存视频数据失败")
 		}
+		vlr, err := db.GetVideoList(id)
+		if err != nil {
+			logger.Error("feed 填写缓存失败")
+			return
+		}
+		data, _ := json.Marshal(vlr)
+		err4 := rdb.RDB.Set(context.Background(), "video_list_feed", data, time.Minute*30).Err()
+		if err4 != nil {
+			logger.Error("Feed 存取redis失败")
+			return
+		}
+
 	}()
 	return nil
 }
@@ -137,10 +155,12 @@ func (v VideoService) GetFeed() ([]model.Video, error) {
 	}
 	if err != redis.Nil {
 		var r []model.Video
-		err = json.Unmarshal([]byte(result), &r)
+
+		err := json.Unmarshal([]byte(result), &r)
 		if err != nil {
 			return nil, err
 		}
+
 		logger.Debug("我走的是缓存")
 		return r, nil
 	}
@@ -151,7 +171,11 @@ func (v VideoService) GetFeed() ([]model.Video, error) {
 	}
 	go func() {
 		data, _ := json.Marshal(fe)
-		rdb.RDB.Set(context.Background(), "video_list_feed", data, time.Minute*30)
+		err2 := rdb.RDB.Set(context.Background(), "video_list_feed", data, time.Minute*30).Err()
+		if err2 != nil {
+			logger.Error("GetFeed 存取redis失败")
+			return
+		}
 	}()
 	return fe, nil
 }

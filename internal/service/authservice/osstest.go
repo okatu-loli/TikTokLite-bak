@@ -1,9 +1,10 @@
-package util
+package main
 
 import (
 	"fmt"
-	"strconv"
+	"github.com/okatu-loli/TikTokLite/internal/service/util"
 	"strings"
+	"time"
 )
 
 var server = []string{
@@ -14,12 +15,12 @@ var server = []string{
 }
 
 func main() {
-	ring := New(server, 4)
+	ring := util.New(server, 100)
 	//hr.addNode("192.168.5.5")
 	fifth := 0
 	first, second, third, four := 0, 0, 0, 0
-	for i := 0; i < 10; i++ {
-		str := ring.getNode(strconv.Itoa(i))
+	for i := 0; i < 10000; i++ {
+		str := ring.GetNode(time.Now().String())
 		if strings.Compare(str, "192.168.1.1") == 0 {
 			fmt.Printf("192.168.1.1：%v \n", i)
 			first++
@@ -37,7 +38,7 @@ func main() {
 			fifth++
 		}
 	}
-
+	fmt.Printf("\n\n\n")
 	fmt.Printf("%v %v %v %v %v", first, second, third, four, fifth)
 
 }
