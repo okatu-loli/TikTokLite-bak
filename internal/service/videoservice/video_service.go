@@ -149,11 +149,13 @@ func (v VideoService) GetList(uesrId uint) ([]model.Video, error) {
 
 func (v VideoService) GetFeed() ([]model.Video, error) {
 
+	//查询缓存
 	result, err := rdb.RDB.Get(context.Background(), "video_list_feed").Result()
 	if err != nil && err != redis.Nil {
 		return nil, err
 	}
 	if err != redis.Nil {
+		//如果有缓存则直接返回
 		var r []model.Video
 
 		err := json.Unmarshal([]byte(result), &r)
@@ -164,11 +166,13 @@ func (v VideoService) GetFeed() ([]model.Video, error) {
 		logger.Debug("我走的是缓存")
 		return r, nil
 	}
+	//数据库查询
 	fe, err := repository.GetFeed()
 	if err != nil {
 		logger.Error("GetFeed 获取视频失败")
 		return nil, err
 	}
+	//开启协程异步去写入缓存
 	go func() {
 		data, _ := json.Marshal(fe)
 		err2 := rdb.RDB.Set(context.Background(), "video_list_feed", data, time.Minute*30).Err()
